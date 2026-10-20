@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const dns = require("dns")
 
-// sirf tab chalega jab .env me DNS_SERVERS likha ho
+
 if (process.env.DNS_SERVERS) {
     dns.setServers(process.env.DNS_SERVERS.split(",").map((s) => s.trim()))
 }
