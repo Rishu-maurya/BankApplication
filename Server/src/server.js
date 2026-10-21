@@ -1,22 +1,20 @@
-const express = require('express');
-const connectDB = require('./config/db.js');
-
 const dotenv = require('dotenv');
 dotenv.config();
 
-const app = express();
+const app = require('./app.js');
 
+const connectDB = require('./config/db.js');
 
-
-app.use(express.json());
-
-
-
+const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is not defined in the environment variables");
+      process.exit(1);
+    }
     await connectDB();
-    const PORT = process.env.PORT || 5000;
+    
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
