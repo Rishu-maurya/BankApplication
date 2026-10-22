@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const USer = require("../models/users")
+const User = require("../models/users")
 
 const authMiddleware = async (req, res, next) => {
     try {
@@ -13,19 +13,28 @@ const authMiddleware = async (req, res, next) => {
         }
 
         const token = authHeader.slice(7)
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_secret_key')
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-        const user = await User.findByID(decoded.id).select('-password')
+        const user = await User.findById(decoded.id).select('-password')
         if (!user) {
-            return res.status(404).json({
+            return res.status(401).json({
                 success: false,
-                message: "User not longer exists."
+                message: "User no longer exists."
             })
         }
+
+        if (!user.isActive) {
+            return res.status(403).json ({
+                success:false,
+                message: "Your account has been blocked"
+            })
+        }
+
         req.user = user
         next()
 
     } catch (error) {
+        console.log("Auth middleware error:", error.message)
         return res.status(401).json({
             success: false,
             message: "Invalid or expired token."
@@ -40,4 +49,4 @@ const getMe = (req, res) => {
     })
 }
 
-module.exports = authMiddleware, getMe
+module.exports = authMiddleware
