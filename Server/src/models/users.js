@@ -16,21 +16,25 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      minlength: 6,
       required: true,
       select: false, // Exclude password from query results by default
     },
     phone: {
         type: String,
-        maxlength: 10,
-        required: true,
+        match: [/^[6-9]\d{9}$/, "Enter a valid 10 digit phone number"],
         trim: true,
+
     },
 
     role: {
       type: String,
-      enum: ["user", "staff", "manager", "admin"],
-      default: "user"
+      enum: ["reader", "author", "editor", "admin"],
+      default: "reader"
+    },
+    
+    isActive:{
+      type: Boolean,
+      default: true,
     }
   },
   { timestamps: true }
